@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Audiobook Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        input, select, button {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PDF to Audiobook Converter</h1>
+        <form id="converter-form" enctype="multipart/form-data">
+            <label for="pdf">Upload PDF:</label>
+            <input type="file" id="pdf" name="pdf" accept="application/pdf" required>
+
+            <label for="voice">Select Voice:</label>
+            <select id="voice" name="voice">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+
+            <label for="speed">Speech Speed (Words per Minute):</label>
+            <input type="number" id="speed" name="speed" value="150" min="50" max="300" required>
+
+            <button type="submit">Convert to Audiobook</button>
+        </form>
+        <p id="status"></p>
+    </div>
+
+    <script>
+        const form = document.getElementById('converter-form');
+        const status = document.getElementById('status');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            status.textContent = "Processing...";
+            
+            const formData = new FormData(form);
+            const response = await fetch('/convert', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                status.innerHTML = `Conversion successful! <a href="${result.audio_file}" download>Download Audiobook</a>`;
+            } else {
+                status.textContent = `Error: ${result.error}`;
+            }
+        });
+    </script>
+</body>
+</html>
